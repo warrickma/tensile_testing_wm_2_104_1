@@ -2,12 +2,15 @@ library(ggplot2)
 library(scales)
 library(svglite)
 data_1 = read.csv("trial_1.csv")
+#Clean up the data, remove unnecessary headers
 data_1 = data_1[-(1:650),(1:3)]
 colnames(data_1) = c("Time", "Displacement", "Force")
 data_1$Time = as.numeric(as.character(data_1$Time))
 data_1$Displacement = as.numeric(as.character(data_1$Displacement))
 data_1$Force = as.numeric(as.character(data_1$Force))
+#Compute Strain (mm/mm)
 data_1$Tensile_Strain = data_1$Displacement/14.18
+#Compute Stress
 data_1$Tensile_Stress = data_1$Force/(1.07*1.58)
 data_1$trial = "1"
 
@@ -40,24 +43,19 @@ data_4$Force = as.numeric(as.character(data_4$Force))
 data_4$Tensile_Strain = data_4$Displacement/13.5
 data_4$Tensile_Stress = data_4$Force/(1.53*0.98)
 data_4$trial = "4"
-
+#Combine trials in one single file
 subtotal = rbind(data_2, data_3)
 total = rbind(subtotal, data_4)
 
-
-
 ggplot(total) +
   geom_path(aes(x = Tensile_Strain, y = Tensile_Stress, color = trial), size = 1) +
+  #Use Cornell branding color
   scale_color_manual(name = "Trial",
                      limits = c("1", "2", "3"),
                      values = c("#006699", "#6EB43F", "#073949")) +
   labs(x = "Strain", y = "Stress (kPa)") +
   scale_x_continuous(limits = c(0,0.30), n.breaks = 5, labels = scales::percent) +
   theme_classic() +
-  #annotate("text", x = 0.225, y = 225, label = "Trial 1", color = "#006699", size = 4, fontface = "bold") +
-  #annotate("text", x = 0.2, y = 225, label = "Trial 2", color = "#6EB43F", size = 4, fontface = "bold") +
-  #annotate("text", x = 0.25, y = 225, label = "Trial 3", color = "#F8981D", size = 4, fontface = "bold") +
-  #annotate("text", x = 0.25, y = 225, label = "Trial 3", color = "#073949", size = 4, fontface = "bold") +
   theme(
     axis.text.x = element_text(size=10, color = "black", face = "bold"),
     axis.text.y = element_text(size=10, color = "black", face = "bold"),
